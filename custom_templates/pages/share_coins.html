@@ -1,0 +1,53 @@
+{% extends "layouts/base1.html" %}
+
+{% block title %}Aperture{% endblock title %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="content">
+    <div class="page-inner">
+        <h4 class="page-title">Share Coins</h4>
+        <div class="row">
+            <form action="{% url 'exchange_coins' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Select the User you want to share coins with</label>
+                    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="user_id" required> 
+                            <option value="">None</option>
+                            {% for user in users %}
+                            <option value="{{user.id}}">{{user.username}}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">Enter Number of Coins</label>
+                  <input type="number" value="" onkeypress="handle_max_coins()" class="form-control" name="num_coins" id="coins" placeholder="num_coins" required max={{request.user.profile.coins}}>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+
+<script src="/static/assets/js/setting-demo.js"></script>
+<script>
+    var x = Number('{{request.user.profile.coins}}')
+    function handle_max_coins() {
+        num_coins = document.getElementById('coins').value
+        //console.log(typeof(num_coins), num_coins)
+        console.log(typeof(x))
+        if(num_coins>x){
+            document.getElementById('coins').value = Math.floor(x/10)
+        }
+    }
+</script>
+
+{% endblock javascripts %}

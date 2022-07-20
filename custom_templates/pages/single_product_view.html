@@ -1,0 +1,210 @@
+{% extends "layouts/base1.html" %}
+
+{% block title %}Aperture{% endblock title %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="content">
+    <div class="page-inner">
+        <!-- <div class="row">
+            <div class="col-md-4">
+                <div class="card card-post card-round">
+                    <img class="card-img-top" src="{{product.image.all.0.image.url}}" alt="Card image cap">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="avatar">
+                                <img src="{{product.brand.logo.url}}" alt="..." class="avatar-img rounded-circle">
+                            </div>
+                            <div class="info-post ml-2">
+                                <p class="username">{{product.name}}</p>
+                                <button class="btn-primary btn-md btn-rounded">{{product.price}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-md-4 mr-3">
+                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                        {% for image in product.image.all %}
+                        {% if forloop.first %}
+                          <div class="carousel-item active">
+                            <img class="d-block w-100" src="{{image.image.url}}" alt="First slide">
+                          </div>
+                        {% else %}
+                        <div class="carousel-item">
+                            <img class="d-block w-100" src="{{image.image.url}}" alt="First slide">
+                          </div>
+                        {% endif %}
+                        {% endfor %}
+                        </div>
+                        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Next</span>
+                        </a>
+                      </div>
+                </div>
+                <div class="col-md-5 ml-3">
+                   <h1 class="p_name">{{product.name}}</h1>
+                   <h3 class="p_desc">{{product.description}}</h3>
+                   <h1 class="p_pri">Rs. {{product.price}} &nbsp <span class="strike"><del>Rs. 2000  &nbsp </del></span> <span class="disc">(20% off)</span></h1>
+                   <h6 class="pri_desc">Inclusive of all taxes.</h6><br>
+                    <h2>SELECT SIZE | &nbsp <span>SIZE CHART </span></h2>
+                        <button class="size_btn">S</button> &nbsp;
+                        <button class="size_btn">M</button> &nbsp;
+                        <button class="size_btn">L</button> &nbsp;
+                        <button class="size_btn">XL</button> &nbsp;<br><br>
+                    <div class="addi">
+                        <p class="addi">100% Original Products <br>
+                            Pay on delivery might be available <br>
+                            Easy 30 days returns and exchanges <br>
+                            Try & Buy might be available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <center><h1 class="title2">Check how it fits you!</h1></center>
+        <div class="row">
+            <div class="container mt-3 mb-3 col-md-7">
+                <canvas id="c"></canvas>
+            </div>
+            <div class="container col-md-3 mt-3">
+                <div class="card card-post">
+                    <img src="{{product.echo_ar_qr.url}}" alt="" class="card-img-top">
+                    <center><p>Scan on your phone to view in AR.</p></center>
+                </div>
+                <center><h3>OR</h3></center>
+                <div class="card-body">
+                    <div class="d-flex text-center">
+                        <p>
+                            <div class="container mb-3">
+                                <a href="{{product.echo_ar}}" target="_blank"><button class=" ARbutton btn btn-rounded btn-xl">View In Web</button></a>
+                            </div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+
+<script src="/static/assets/js/setting-demo.js"></script>
+
+<script type="module">
+    import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/build/three.module.js';
+    import {OrbitControls} from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/controls/OrbitControls.js';
+    import {OBJLoader} from 'https://threejsfundamentals.org/threejs/resources/threejs/r132/examples/jsm/loaders/OBJLoader.js';
+
+    function main() {
+    const canvas = document.querySelector('#c');
+    const renderer = new THREE.WebGLRenderer({canvas});
+
+    const fov = 90;
+    const aspect = 2;  // the canvas default
+    const near = 0.1;
+    const far = 100;
+    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+    camera.position.set(0, 10, 20);
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, 5, 0);
+    controls.update();
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('black');
+
+    {
+        const planeSize = 50;
+
+        const loader = new THREE.TextureLoader();
+        const texture = loader.load('https://threejsfundamentals.org/threejs/resources/images/checker.png');
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.magFilter = THREE.NearestFilter;
+        const repeats = planeSize / 2;
+        texture.repeat.set(repeats, repeats);
+
+        const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
+        const planeMat = new THREE.MeshPhongMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+        });
+        const mesh = new THREE.Mesh(planeGeo, planeMat);
+        mesh.rotation.x = Math.PI * -.5;
+        //scene.add(mesh);
+    }
+
+    {
+        const skyColor = 0xB1E1FF;  // light blue
+        const groundColor = 0xB97A20;  // brownish orange
+        const intensity = 1;
+        const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+        scene.add(light);
+    }
+
+    {
+        const color = 0xFFFFFF;
+        const intensity = 1;
+        const light = new THREE.DirectionalLight(color, intensity);
+        light.position.set(0, 10, 0);
+        light.target.position.set(-5, 0, 0);
+        scene.add(light);
+        scene.add(light.target);
+    }
+
+    {
+        const objLoader = new OBJLoader();
+        objLoader.load('{{product.obj.url}}', (root) => {
+            root.scale.x = 14
+            root.scale.y = 14
+            root.scale.z = 14
+        scene.add(root);
+        });
+    }
+
+    function resizeRendererToDisplaySize(renderer) {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+        renderer.setSize(width, height, false);
+        }
+        return needResize;
+    }
+
+    function render() {
+
+        if (resizeRendererToDisplaySize(renderer)) {
+        const canvas = renderer.domElement;
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+        }
+
+        renderer.render(scene, camera);
+
+        requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
+    }
+
+    main();
+</script>
+
+{% endblock javascripts %}
